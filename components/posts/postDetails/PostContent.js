@@ -2,46 +2,50 @@ import ReactMarkdown from "react-markdown";
 import Image from "next/image";
 import classes from "./PostContent.module.css";
 import PostHeader from "./PostHeader";
-
-// const DUMMY_POST = {
-//     title: "NextJs1",
-//     image: "getting-started-nextjs.png",
-//     content: "# This is a first post",
-//     date: "2022-02-10",
-//     slug: "NextJs1",
-//   }
+import {Prism as SyntaxHighlighter} from "react-syntax-highlighter";
+import {atomDark} from "react-syntax-highlighter/dist/cjs/styles/prism";
 
 function PostContent({ post }) {
   const imagePath = `/images/posts/${post.slug}/${post.image}`;
   const customComponents = {
-    // img(image) {
-    //   return (
-    //     <Image
-    //       src={`/images/posts/${post.slug}/${image.properties.src}`}
-    //       alt={image.src}
-    //       width={600}
-    //       height={300}
-    //     />
-    //   );
-    // },
     p(paragraph) {
       const { node } = paragraph;
-      if (node.children[0].tagName === "img") {
+      console.log(node); 
+      if (
+        node.type === "element" &&
+        node.tagName === "p" &&
+        node.children[0].type === "element" &&
+        node.children[0].tagName === "img"
+      ) {
         const image = node.children[0];
+        const alt = image.properties.alt || "";
+        console.log(image);
         return (
           <div className={classes.image}>
             <Image
               src={`/images/posts/${post.slug}/${image.properties.src}`}
-              alt={image.alt}
+              alt={alt}
               width={600}
               height={300}
             />
           </div>
         );
       }
-      return <p>{paragraph.children}</p>
+      return <p>{paragraph.children}</p>;
     },
-   
+
+    code({ className, children }) {
+      const language = className.split("-")[1];
+      return (
+        <SyntaxHighlighter
+          style={atomDark}
+          language={language}
+         
+        >
+          {children}
+        </SyntaxHighlighter>
+      );
+    },
   };
 
   return (

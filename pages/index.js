@@ -1,42 +1,23 @@
+import Head from "next/head";
 import FeaturedPosts from "../components/homePage/FeaturedPosts";
 import Hero from "../components/homePage/Hero";
-import {getFeaturedPosts} from '../lib/posts-util';
+import { getFeaturedPosts } from "../lib/posts-util";
 
-// const DUMMY_POSTS = [
-//   {
-//     title: "NextJs1",
-//     image: "getting-started-nextjs.png",
-//     excerpt: "NextJs1",
-//     date: "2022-02-10",
-//     slug: "NextJs1",
-//   },
-//   {
-//     title: "NextJs1",
-//     image: "getting-started-nextjs.png",
-//     excerpt: "NextJs1",
-//     date: "2022-02-10",
-//     slug: "NextJs2",
-//   },
-//   {
-//     title: "NextJs1",
-//     image: "getting-started-nextjs.png",
-//     excerpt: "NextJs1",
-//     date: "2022-02-10",
-//     slug: "NextJs3",
-//   },
-// ];
-
-function HomePage(props){
-  const {posts} = props;
-    return (
-      <>
-        <Hero />
-        <FeaturedPosts posts={posts} />
-      </>
-    );
+function HomePage(props) {
+  const { posts } = props;
+  return (
+    <>
+      <Head>
+        <title>Alaa' Blog</title>
+        <meta name="description" content="I post about web development"/>
+      </Head>
+      <Hero />
+      <FeaturedPosts posts={posts} />
+    </>
+  );
 }
 
-export function getStaticProps(){
+export function getStaticProps() {
   const featuredPosts = getFeaturedPosts();
   return {
     props: {

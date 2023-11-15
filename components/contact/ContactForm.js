@@ -6,20 +6,24 @@ function ContactForm() {
   const [enteredName, setEnteredName] = useState("");
   const [enteredMessage, setEnteredMessage] = useState("");
 
-  const reqBody = JSON.stringify({
-    email: enteredEmail,
-    name: enteredName,
-    message: enteredMessage,
-  });
+  // const reqBody = JSON.stringify({
+  //   email: enteredEmail,
+  //   name: enteredName,
+  //   message: enteredMessage,
+  // });
   function handleSubmit(e) {
     e.preventDefault();
-    fetch(`/api/contact`, {
+    fetch('/api/contact', {
       method: "POST",
-      body: reqBody,
+      body: JSON.stringify({
+        email: enteredEmail,
+        name: enteredName,
+        message: enteredMessage,
+      }),
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-    }).then();
+    });
   }
   return (
     <section className={classes.contact}>
@@ -49,6 +53,7 @@ function ContactForm() {
           <div className={classes.control}>
             <label htmlFor="message">Your Message</label>
             <textarea
+              className={classes.text}
               id="message"
               required
               rows="5"

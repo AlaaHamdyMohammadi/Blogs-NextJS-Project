@@ -22,12 +22,14 @@ function PostContent({ post }) {
         console.log(image);
         return (
           <div className={classes.image}>
-            <Image
+            {/*
+              <Image
               src={`/images/posts/${post.slug}/${image.properties.src}`}
               alt={alt}
               width={600}
               height={300}
             />
+          */}
           </div>
         );
       }

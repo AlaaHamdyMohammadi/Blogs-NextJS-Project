@@ -1,49 +1,57 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+
 import classes from "./ContactForm.module.css";
 import Notification from "../ui/notification";
+
+async function sendContactData(contactDetails) {
+  const response = await fetch("/api/contact", {
+    method: "POST",
+    body: JSON.stringify(contactDetails),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Something went wrong!");
+  }
+}
 
 function ContactForm() {
   const [enteredEmail, setEnteredEmail] = useState("");
   const [enteredName, setEnteredName] = useState("");
   const [enteredMessage, setEnteredMessage] = useState("");
-  const [requestStatus, setRequestStatus] = useState(); // pending or success or error
+  const [requestStatus, setRequestStatus] = useState(); // 'pending', 'success', 'error'
   const [requestError, setRequestError] = useState();
 
   useEffect(() => {
     if (requestStatus === "success" || requestStatus === "error") {
-      const result = setTimeout(() => {
+      const timer = setTimeout(() => {
         setRequestStatus(null);
         setRequestError(null);
       }, 3000);
-      return () => clearTimeout(result);
+
+      return () => clearTimeout(timer);
     }
-  }, [setRequestStatus]);
+  }, [requestStatus]);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  async function sendMessageHandler(event) {
+    event.preventDefault();
+
     setRequestStatus("pending");
+
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        body: JSON.stringify({
-          email: enteredEmail,
-          name: enteredName,
-          message: enteredMessage,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
+      await sendContactData({
+        email: enteredEmail,
+        name: enteredName,
+        message: enteredMessage,
       });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Something went wrong!");
-      }
-
       setRequestStatus("success");
+      setEnteredMessage("");
       setEnteredEmail("");
       setEnteredName("");
-      setEnteredMessage("");
     } catch (error) {
       setRequestError(error.message);
       setRequestStatus("error");
@@ -51,11 +59,12 @@ function ContactForm() {
   }
 
   let notification;
+
   if (requestStatus === "pending") {
     notification = {
       status: "pending",
       title: "Sending message...",
-      message: "Your message is on its way",
+      message: "Your message is on its way!",
     };
   }
 
@@ -63,22 +72,22 @@ function ContactForm() {
     notification = {
       status: "success",
       title: "Success!",
-      message: "Message sent successfully",
+      message: "Message sent successfully!",
     };
   }
 
   if (requestStatus === "error") {
     notification = {
-      status: "success",
-      title: "Success!",
+      status: "error",
+      title: "Error!",
       message: requestError,
     };
   }
 
   return (
     <section className={classes.contact}>
-      <h1>How can I help you ?</h1>
-      <form className={classes.form} onSubmit={handleSubmit}>
+      <h1>How can I help you?</h1>
+      <form className={classes.form} onSubmit={sendMessageHandler}>
         <div className={classes.controls}>
           <div className={classes.control}>
             <label htmlFor="email">Your Email</label>
@@ -87,7 +96,7 @@ function ContactForm() {
               id="email"
               required
               value={enteredEmail}
-              onChange={(e) => setEnteredEmail(e.target.value)}
+              onChange={(event) => setEnteredEmail(event.target.value)}
             />
           </div>
           <div className={classes.control}>
@@ -97,23 +106,23 @@ function ContactForm() {
               id="name"
               required
               value={enteredName}
-              onChange={(e) => setEnteredName(e.target.value)}
+              onChange={(event) => setEnteredName(event.target.value)}
             />
           </div>
-          <div className={classes.control}>
-            <label htmlFor="message">Your Message</label>
-            <textarea
-              className={classes.text}
-              id="message"
-              required
-              rows="5"
-              value={enteredMessage}
-              onChange={(e) => setEnteredMessage(e.target.value)}
-            ></textarea>
-          </div>
-          <div className={classes.actions}>
-            <button>Send Message</button>
-          </div>
+        </div>
+        <div className={classes.control}>
+          <label htmlFor="message">Your Message</label>
+          <textarea
+            id="message"
+            rows="5"
+            required
+            value={enteredMessage}
+            onChange={(event) => setEnteredMessage(event.target.value)}
+          ></textarea>
+        </div>
+
+        <div className={classes.actions}>
+          <button>Send Message</button>
         </div>
       </form>
       {notification && (

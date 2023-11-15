@@ -41,12 +41,14 @@
 
 .control {
   flex: 1;
-  min-width: 10rem;
+  min-width: 16rem;
 }
 
 .actions {
   margin-top: var(--size-4);
   text-align: right;
+  display: flex;
+  width: fit-content;
 }
 
 .form button {

@@ -1,16 +1,17 @@
 import Head from "next/head";
-import PostContent from "../../components/posts/postDetails/postContent";
-import { getPostData, getPostsFiles } from "../../lib/posts-util";
 
-function PostDetailsPage(props) {
-  const { post } = props;
+// import PostContent from "../../components/posts/PostDetail/PostContent";
+import { getPostData, getPostsFiles } from "../../lib/posts-util";
+import PostContent from "../../components/posts/postDetails/PostContent";
+
+function PostDetailPage(props) {
   return (
     <>
       <Head>
-        <title>{post.title}</title>
-        <meta name="description" content={post.excerpt} />
+        <title>{props.post.title}</title>
+        <meta name="description" content={props.post.excerpt} />
       </Head>
-      <PostContent post={post} />;
+      <PostContent post={props.post} />
     </>
   );
 }
@@ -20,21 +21,24 @@ export function getStaticProps(context) {
   const { slug } = params;
 
   const postData = getPostData(slug);
+
   return {
     props: {
       post: postData,
     },
-    revalidate: 5,
+    revalidate: 600,
   };
 }
 
 export function getStaticPaths() {
   const postFilenames = getPostsFiles();
+
   const slugs = postFilenames.map((fileName) => fileName.replace(/\.md$/, ""));
+
   return {
-    paths: slugs.map((slug) => ({ params: { slug } })),
-    fallback: "blocking",
+    paths: slugs.map((slug) => ({ params: { slug: slug } })),
+    fallback: false,
   };
 }
 
-export default PostDetailsPage;
+export default PostDetailPage;
